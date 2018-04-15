@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="myCanvas" width="1000" height="500"></canvas>
+    <div id="log" style="position: absolute; top: 0"><div>
+    <script>
+      var canvas = document.getElementById('myCanvas');
+      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+      log = document.getElementById('log');
+      var context = canvas.getContext('2d');
+      var centerX = canvas.width / 2;
+      var centerY = canvas.height / 2;
+      var radius = 70;
+
+      context.beginPath();
+      context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+      context.fillStyle = 'aqua';
+      context.fill();
+      context.lineWidth = 5;
+      context.strokeStyle = '#003300';
+      context.stroke();
+
+
+      function circle( x, y ) {
+        context.beginPath();
+        context.arc(x, y, radius, 0, 2 * Math.PI, false);
+        context.fill();
+        context.stroke();
+      }
+
+      function handleMouse( event ) {
+        console.log( 'event:', event );
+        event.preventDefault();
+        // if( event.buttons != 1) {
+        //   return;
+        // }
+
+        circle(event.x, event.y);
+      }
+
+      function handleTouch( event ) {
+        console.log( 'handleTouch event:', event );
+        event.preventDefault();
+        // log.innerText = JSON.stringify(event);
+
+        for(var i = 0; i< event.changedTouches.length; i++) {
+          var touch = event.changedTouches[i];
+            circle(touch.pageX, touch.pageY);
+          }
+      }
+
+      canvas.onclick = handleMouse;
+      canvas.onmousemove = handleMouse;
+      canvas.addEventListener("touchstart", handleTouch, false);
+      canvas.addEventListener("touchend", handleTouch, false);
+      canvas.addEventListener("touchcancel", handleTouch, false);
+      canvas.addEventListener("touchmove", handleTouch, false);
+    </script>
+  </body>
+</html>
