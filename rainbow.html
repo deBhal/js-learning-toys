@@ -1,0 +1,192 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="myCanvas" width="1000" height="500"></canvas>
+    <div id="log" style="position: absolute; top: 0">log<div>
+    <script>
+      var canvas = document.getElementById('myCanvas');
+      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+      log = document.getElementById('log');
+      var context = canvas.getContext('2d');
+      var centerX = canvas.width / 2;
+      var centerY = canvas.height / 2;
+      var radius = 70;
+      var needsRedraw = false;
+
+      var rainbowColors = ['red','orange','yellow','lime','blue','indigo'
+      ,'violet'
+      ];
+
+      log.innerText = "in js";
+      rainbow(centerX, centerY, 200);
+
+      function clear() {
+        context.clearRect(0,0,canvas.width, canvas.height);
+      };
+
+      function normalizeAngle( angle ) {
+        const circle = 2 * Math.PI;
+        return angle < 0 ? normalizeAngle( angle + circle ) :
+          angle > circle ? normalizeAngle( angle - circle ) : angle;
+      }
+
+      function rainbow( x, y, radius, arcStart, arcEnd, leftToRight ) {
+        // clear();
+
+      //   // manual default values to support an old ipad
+        if ( radius === undefined ) radius = 70;
+        if ( arcStart=== undefined ) arcStart = Math.PI;
+        if ( arcEnd === undefined ) arcEnd = 2 * Math.PI;
+        if ( leftToRight === undefined ) leftToRight = true;
+
+        // A real rainbow is only about 2 degrees wide, but we'd like a nice
+        // fat one
+        var colorWidth =  radius / 20;
+        var totalRainbowWidth = rainbowColors.length * colorWidth;
+        var innerRadius = radius - (totalRainbowWidth / 2);
+        var arcLength = Math.abs(arcEnd - arcStart);
+
+        // Animate
+        var currentArcLength = arcLength * cappedAnimationProgress();
+        var currentArcEnd = leftToRight ? arcStart + currentArcLength : arcStart - currentArcLength;
+
+        rainbowColors.map( function(color, index) {
+          context.beginPath();
+          context.strokeStyle = color;
+          context.lineWidth = colorWidth;
+          context.arc(x, y, innerRadius + (index*colorWidth), normalizeAngle(arcStart), normalizeAngle(currentArcEnd), ! leftToRight );
+          context.stroke();
+        })
+      }
+
+      function XOR( a, b ) {
+        return ( a && !b ) || ( b && !a);
+      }
+      function rainbow2( x1, y1, x2, y2 ) {
+        var radius = distance( x1, y1, x2, y2 ) / 2;
+        var x = (x1 + x2)  / 2;
+        var y = (y1 + y2)  / 2;
+
+        var arcStart = Math.atan2( y1 - y, x1 - x );
+        var arcEnd = Math.atan2( y2 - y, x2 - x );
+
+        var leftToRight = x2 > x1;
+        if ( ! leftToRight ) {
+          // var swap = arcStart;
+          // arcStart = arcEnd;
+          // arcEnd = swap;
+        };
+
+        rainbow( x, y, radius, arcStart, arcEnd, leftToRight );
+      }
+
+      function handleMouse( event ) {
+        console.log( 'event:', event );
+        event.preventDefault();
+        // if( event.buttons != 1) {
+        //   return;
+        // }
+
+        rainbow(event.x, event.y);
+      }
+
+      function distance( x1, y1, x2, y2 ) {
+        var dx = x1 - x2;
+        var dy = y1 - y2;
+        return Math.sqrt( dx * dx + dy * dy)
+      }
+
+      var storedFirst = { pageX: centerX - 70, pageY:centerY };
+      var storedSecond = { pageX: centerX + 70, pageY:centerY };
+
+
+      function handleTouchStart( event ) {
+        timerStart = Date.now();
+        handleTouch(event);
+      }
+
+
+      function handleTouch( event ) {
+        console.log( 'handleTouch event:', event );
+        event.preventDefault();
+        needsRedraw = true;
+
+        if( event.targetTouches.length == 0) {
+          return;
+        }
+
+        var first = event.targetTouches[0];
+        console.log('touch:', first.pageX, first.pageY);
+        // Placeholder event
+        var second;
+
+        if(event.targetTouches.length > 1) {
+          second = event.targetTouches[1];
+          console.log( 'second touch:', second );
+        };
+
+        // setup defaults a default
+        if ( ! second ) {
+          // first = { pageX: first.pageX - 100, pageY: first.pageY };
+          // second = { pageX: first.pageX + 200, pageY: first.pageY };
+          second = first;
+          first = storedSecond;
+        }
+
+        if( distance(first.pageX, first.pageY, second.pageX, second.pageY) > 20 ){
+          storedFirst = first;
+          storedSecond = second;
+        }
+        console.log('first', first.pageX, first.pageY);
+        console.log('second', second.pageX, second.pageY)
+
+        // rainbow2( first.pageX, first.pageY, second.pageX, second.pageY );
+        // rainbow( first.pageX, first.pageY );
+        // rainbow( second.pageX, second.pageY );
+        return;
+      }
+
+      function drawStoredRainbow() {
+        if( needsRedraw ) {
+          console.log( 'storedFirst:', storedFirst.pageX, storedFirst.pageY, ', storedSecond:', storedSecond.pageX, storedSecond.pageY );
+          if ( animationProgress() > 1 ) needsRedraw = false;
+          rainbow2(storedFirst.pageX, storedFirst.pageY, storedSecond.pageX, storedSecond.pageY);
+        }
+      }
+      function animate() {
+        drawStoredRainbow();
+        window.requestAnimationFrame ? window.requestAnimationFrame( animate ) : log.innerText = "no requestAnimationFrame";
+         ;
+      }
+      animate();
+      // var animationInterval = setInterval( drawStoredRainbow, 30);
+
+      canvas.onclick = handleMouse;
+      canvas.onmousemove = handleMouse;
+      canvas.addEventListener("touchstart", handleTouchStart, false);
+      canvas.addEventListener("touchend", handleTouch, false);
+      canvas.addEventListener("touchcancel", handleTouch, false);
+      canvas.addEventListener("touchmove", handleTouch, false);
+
+      var timerStart = Date.now();
+      var arcDuration = 500; // 5 seconds
+      function animationProgress() {
+        return ( Date.now() - timerStart ) / arcDuration;
+      }
+
+      function cappedAnimationProgress() {
+        return Math.min( animationProgress(), 1);
+      }
+
+    </script>
+  </body>
+</html>
