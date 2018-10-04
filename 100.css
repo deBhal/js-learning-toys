@@ -1,0 +1,58 @@
+div {
+  display: flex;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  align-items: flex-start;
+}
+
+body {
+  margin: 0px;
+  padding: 0px;
+  display: flex;
+}
+
+.number-grid {
+  flex-direction: column;
+  padding: 5px;
+}
+
+.number {
+  align-items: center;
+  justify-content: center;
+  margin-left: -1px;
+  margin-bottom: -1px;
+  width: 40px;
+  height: 40px;
+  border: 1px solid black;
+}
+
+.controls {
+  flex-direction: column;
+}
+
+input {
+  padding: 7px;
+}
+
+.number-input {
+  width: 60px;
+  border: 1px solid black;
+  margin-left: 7px;
+}
+
+.multiple-selector {
+  margin: 5px;
+  align-items: center;
+}
+
+button {
+  display: inline-block;
+    border: 1px solid black;
+  border-radius: 5px;
+    padding: 2px 6px 3px;
+  border-width: 2px;
+  border-style: outset;
+  border-color: buttonface;
+  border-image: initial;
+}

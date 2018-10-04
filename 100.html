@@ -1,0 +1,114 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="./100.css" media="screen" />
+    </style>
+  </head>
+  <body>
+    <div id="top">
+      <div id="number-grid" class="number-grid"></div>
+      <div id="log" style="position: absolute; top: 0"></div>
+      <div class="controls">
+        <div class="multiple-selector">
+          <input type="checkbox" name="checked" checked=true oninput="applySelectors()"/>
+          <input type="number" class="number-input" value="2" pattern="[0-9]*" oninput="applySelectors()"/>
+          <input type="color" value="#ffb1fd"" id="colorPicker" oninput="applySelectors()"></input>
+        </div>
+        <div class="multiple-selector">
+          <input type="checkbox" name="checked" oninput="applySelectors()"/>
+          <input type="number" class="number-input" value="3" oninput="applySelectors()"/>
+          <input type="color" value="#00ff00" id="colorPicker" oninput="applySelectors()"></input>
+        </div>
+        <div class="multiple-selector">
+          <input type="checkbox" name="checked" oninput="applySelectors()"/>
+          <input type="number" class="number-input" value="4" oninput="applySelectors()"/>
+          <input type="color" value="#ffff00" id="colorPicker" oninput="applySelectors()"></input>
+        </div>
+        <div class="multiple-selector">
+          <input type="checkbox" name="checked" oninput="applySelectors()"/>
+          <input type="number" class="number-input" value="5" oninput="applySelectors()"/>
+          <input type="color" value="#ffff00" id="colorPicker" oninput="applySelectors()"></input>
+        </div>
+        <button onclick="clearColors()">clear</button>
+      </div>
+    </div>
+    <script>
+      var grid = document.getElementById('number-grid');
+
+      var numbers = [];
+
+      var counter = 1;
+      for(var rowNumber = 0; rowNumber < 10; rowNumber++) {
+        var currentRow = document.createElement('div');
+        currentRow.className = 'row';
+        currentRow.id = 'row-' + rowNumber;
+
+        for(var ones = 0; ones < 10; ones++) {
+          var newNumberElement = document.createElement('div');
+          newNumberElement.id = counter;
+          newNumberElement.className = 'number';
+          newNumberElement.innerText = counter;
+          currentRow.appendChild(newNumberElement);
+          counter++;
+        }
+        grid.appendChild(currentRow);
+      }
+
+      applySelectors();
+
+      function createColorSelector() {
+      }
+
+      function paintBoxes(number, color = 'pink' ){
+        var number = Number(number);
+        console.log( number, color );
+        for(var i = number; i <= 100; i+=number){
+          document.getElementById(i).style.backgroundColor=color;
+        }
+      }
+
+      function clearColors() {
+        console.log('clear');
+        paintBoxes(1,null);
+      }
+
+      function applySelector(selector) {
+        selectors = document.getElementsByClassName("multiple-selector");
+        for (var i = 0; i < selectors.length; i++) {
+          var active = selector.children[0].checked;
+          var number = selector.children[1].value;
+          var color = selector.children[2].value;
+
+          if ( active && number && color ) {
+            paintBoxes( number, color );
+          }
+        }
+      }
+
+      function applySelectors() {
+        clearColors();
+        selectors = document.getElementsByClassName("multiple-selector");
+        for (var i = 0; i < selectors.length; i++) {
+          applySelector(selectors[i]);
+        }
+      }
+
+      forEach( document.getElementsByClassName("multiple-selector"),
+        (selector) => {
+          var checkbox = selector.children[0];
+          var activate = function() {checkbox.checked || ( checkbox.checked = true, applySelectors())};
+          selector.children[1].addEventListener('input', activate);
+          selector.children[2].addEventListener('input', activate);
+        });
+
+      function forEach(container, fn){
+        for (var i = 0; i < container.length; i++) {
+          fn(container[i]);
+        }
+      }
+
+      function dumpEvent(event){console.log(event)};
+
+    </script>
+  </body>
+</html>
