@@ -1,0 +1,83 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="myCanvas" width="1000" height="500"></canvas>
+    <div id="log" style="position: absolute; top: 0">log<div>
+    <script>
+      var canvas = document.getElementById('myCanvas');
+      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+      log = document.getElementById('log');
+      var context = canvas.getContext('2d');
+      var centerX = canvas.width / 2;
+      var centerY = canvas.height / 2;
+      var radius = 70;
+
+      context.beginPath();
+      context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+      context.fillStyle = 'aqua';
+      context.fill();
+      context.lineWidth = 5;
+      context.strokeStyle = '#003300';
+      context.stroke();
+
+      function c( event ) {
+        console.log( 'event:', event );
+        console.log( 'event.x:', event.x );
+        event.preventDefault();
+        // if( event.buttons != 1) {
+        //   return;
+        // }
+        if(event.x) centerX = event.x;
+        if(event.y) centerY = event.y;
+
+      if (event.changedTouches) {
+        context.fillStyle = 'green';
+        touches[0].pageX, touches[0].pageY
+      }
+
+
+        context.beginPath();
+        context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+        context.fillStyle = 'aqua';
+        context.fill();
+        context.lineWidth = 5;
+        context.strokeStyle = '#003300';
+        context.stroke();
+      }
+
+      function t( event ) {
+        event.preventDefault();
+        // log.innerText = JSON.stringify(event);
+
+        for(var i = 0; i< event.changedTouches.length; i++) {
+          var touch = event.changedTouches[i]
+            touch.radius,
+            context.beginPath();
+            context.arc(touch.pageX, touch.pageY, radius, 0, 2 * Math.PI, false);
+            context.fill();
+            context.lineWidth = 5;
+            context.strokeStyle = '#003300';
+            context.stroke();
+          }
+      }
+
+      canvas.onclick = c;
+      canvas.onmousemove = c;
+      el=canvas;
+    el.addEventListener("touchstart", t, false);
+    el.addEventListener("touchend", t, false);
+    el.addEventListener("touchcancel", t, false);
+    el.addEventListener("touchmove", t, false);
+
+    </script>
+  </body>
+</html>
